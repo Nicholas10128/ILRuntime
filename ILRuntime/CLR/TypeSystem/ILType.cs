@@ -317,8 +317,19 @@ namespace ILRuntime.CLR.TypeSystem
                     else
                         RetriveDefinitino ( ( ( TypeSpecification ) def ).ElementType );
                 }
-                else
+                else if ( def is TypeDefinition )
+                {
                     definition = def as TypeDefinition;
+                }
+                else if ( def is TypeReference )
+                {
+                    // Do nothing. Because definition is already the right value.
+                }
+                else
+                {
+                    // I don't know how to process this yet.
+                    throw new InvalidCastException( "The input parameter def is unknown type: " + def.GetType() );
+                }
             }
         }
 
@@ -1172,7 +1183,8 @@ namespace ILRuntime.CLR.TypeSystem
             {
                 for ( int i = 0; i < this.genericArguments.Length; i++ )
                 {
-                    if ( this.genericArguments [ i ].Key == key )
+                    string iKey = this.genericArguments [ i ].Key;
+                    if ( iKey == key || ( iKey == "!0" && key == "T" ) || ( iKey == "T" && key == "!0" ) )
                     {
                         return this.genericArguments [ i ].Value;
                     }
